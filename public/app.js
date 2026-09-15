@@ -14,6 +14,7 @@ const stopBtn = document.getElementById('stopBtn');
 const resetBtn = document.getElementById('resetBtn');
 const overlayImageElement = document.getElementById('overlayImage');
 const uploadBox = document.querySelector('.upload-box');
+const statusDiv = document.getElementById('status');
 
 photoInput.addEventListener('change', (e) => {
   selectedFile = e.target.files[0];
@@ -60,6 +61,7 @@ uploadBtn.addEventListener('click', async () => {
       uploadSection.style.display = 'none';
       cameraSection.style.display = 'block';
       uploadBtn.textContent = 'Upload Photo';
+      updateStatus('Photo uploaded! Click START TRACKING to begin.');
     }
   } catch (error) {
     console.error('Upload error:', error);
@@ -69,23 +71,40 @@ uploadBtn.addEventListener('click', async () => {
   }
 });
 
+function updateStatus(message) {
+  if (statusDiv) {
+    statusDiv.textContent = message;
+    statusDiv.classList.add('active');
+  }
+}
+
+function clearStatus() {
+  if (statusDiv) {
+    statusDiv.classList.remove('active');
+  }
+}
+
 // Initialize Face Detection with better model loading
 async function initializeFaceDetection() {
   try {
+    updateStatus('Loading face detection model...');
     await tf.ready();
     console.log('TensorFlow ready');
     faceDetector = await blazeface.load();
     console.log('BlazeFace loaded successfully');
+    updateStatus('✅ Ready to track your face!');
     return true;
   } catch (error) {
     console.error('Face detection init error:', error);
-    alert('Face detection model failed to load');
+    updateStatus('❌ Failed to load face detection model');
     return false;
   }
 }
 
 startBtn.addEventListener('click', async () => {
   try {
+    updateStatus('Requesting camera access...');
+    
     // Request camera with mobile-optimized settings
     videoStream = await navigator.mediaDevices.getUserMedia({
       video: { 
@@ -110,6 +129,8 @@ startBtn.addEventListener('click', async () => {
     startBtn.disabled = true;
     stopBtn.disabled = false;
     
+    updateStatus('🎬 Face tracking active! Move your face around...');
+    
     if (!faceDetector) {
       const loaded = await initializeFaceDetection();
       if (!loaded) {
@@ -126,7 +147,7 @@ startBtn.addEventListener('click', async () => {
     
   } catch (error) {
     console.error('Camera error:', error);
-    alert('Unable to access camera. Please check permissions and try again.');
+    updateStatus('❌ Unable to access camera. Check permissions.');
     startBtn.disabled = false;
   }
 });
@@ -147,6 +168,7 @@ stopBtn.addEventListener('click', () => {
   
   // Reset image position
   overlayImageElement.style.transform = 'translate(0, 0) scale(1)';
+  updateStatus('Tracking stopped.');
 });
 
 resetBtn.addEventListener('click', () => {
@@ -156,6 +178,7 @@ resetBtn.addEventListener('click', () => {
   selectedFile = null;
   photoInput.value = '';
   uploadBtn.disabled = true;
+  clearStatus();
 });
 
 // Smooth tracking with interpolation
