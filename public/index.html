@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Face Tracking Photo Overlay</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="container">
+    <h1>Face Tracking Photo Overlay</h1>
+    
+    <div class="section upload-section" id="uploadSection">
+      <div class="upload-box">
+        <input type="file" id="photoInput" accept="image/*" />
+        <label for="photoInput" class="upload-label">Click to upload or drag & drop</label>
+        <p class="upload-hint">JPG, PNG, GIF, WebP</p>
+      </div>
+      <button class="btn btn-primary" id="uploadBtn" disabled>Upload Photo</button>
+    </div>
+
+    <div class="section camera-section" id="cameraSection" style="display: none;">
+      <div class="camera-container">
+        <canvas id="detectionCanvas" style="display: none;"></canvas>
+        <img id="overlayImage" class="overlay-image" />
+        <div class="instructions">📷 Position your face toward the camera</div>
+      </div>
+      
+      <div class="controls">
+        <button class="btn btn-secondary" id="startBtn">Start Camera</button>
+        <button class="btn btn-secondary" id="stopBtn" disabled>Stop Camera</button>
+        <button class="btn btn-secondary" id="resetBtn">Upload Different Photo</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/blazeface"></script>
+  <script src="app.js"></script>
+</body>
+</html>
